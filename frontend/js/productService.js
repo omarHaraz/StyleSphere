@@ -65,16 +65,47 @@ function renderProducts(products) {
 }
 
 
+let allProducts = [];
 
 async function initStore() {
-    const products = await fetchProducts();
-    renderProducts(products);
-    
-    // Once everything is rendered, initialize your carousel buttons
+    allProducts  = await fetchProducts();
+
+    if (allProducts) {
+        renderProducts(allProducts); 
+        setupFilterListeners();
+    }
+
     if (typeof initializeCarousels === 'function') {
         initializeCarousels();
     }
 }
+
+
+function setupFilterListeners() {
+    const checkboxes = document.querySelectorAll('.filter-checkbox');
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            // Logic to determine which checkboxes are checked
+            const showInStock = document.querySelector('input[value="in-stock"]').checked;
+            const showOutOfStock = document.querySelector('input[value="out-of-stock"]').checked;
+
+            // Filter logic
+            const filtered = allProducts.filter(p => {
+                if (!showInStock && !showOutOfStock) return true; // Show all if nothing selected
+                if (showInStock && p.stockQuantity > 0) return true;
+                if (showOutOfStock && p.stockQuantity === 0) return true;
+                return false;
+            });
+
+            renderProducts(filtered);
+        });
+    });
+}
+
+
+
+
+
 
 // Run the script when the page is fully loaded
 document.addEventListener('DOMContentLoaded', initStore);

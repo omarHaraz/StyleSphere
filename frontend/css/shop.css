@@ -15,15 +15,78 @@ header { position: fixed; width: 100%; top: 0; left: 0; background-color: #fff; 
 }
 
 .shop-title {
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 24px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-bottom: 30px;
     color: #111;
     
     
 }
+
+
+/* Container for the filter section */
+.filters {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: inline-block;
+    min-width: 150px;
+}
+
+
+
+
+
+/* Container */
+.filter-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* The Button */
+.filter-trigger {
+    padding: 15px 30px; 
+    font-size: 24px;
+    font-weight: 500;
+
+    background: transparent; 
+    border: none;            
+    outline: none;
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;              
+    transition: color 0.3s;
+}
+
+/* The Hidden Menu */
+.filter-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    padding: 12px;
+    z-index: 1;
+    border-radius: 4px;
+}
+
+/* Show the menu on hover */
+.filter-dropdown:hover .filter-content {
+    display: block;
+}
+
+/* Label alignment inside the menu */
+.filter-content label {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
 
 .product-grid {
     display: grid;
