@@ -1,0 +1,97 @@
+/* Reset default browser margins */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+
+/* Transparent Header Overlay */
+header {
+    position: absolute;
+    width: 100%;
+    top: 40px; /* Pushes it down below the top-bar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    z-index: 10; /* Keeps it on top of the image */
+}
+
+
+.logo {
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+/* Navigation Links */
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+nav ul li a:hover {
+    color: #ccc;
+}
+
+/* Icons (Search, User, Cart) */
+.nav-icons {
+    color: white;
+    font-size: 50px;
+    display: flex;
+    gap: 20px;
+    cursor: pointer;
+}
+
+/* Hero Image Section */
+.hero-section {
+    height: 100vh;
+    background-image: url('/images/hero.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Dark overlay to make white text easier to read */
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Shop Now Button */
+.shop-now-btn {
+    position: relative;
+    z-index: 5;
+    color: white;
+    text-decoration: none;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 2px solid white;
+    padding: 30px 80px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.shop-now-btn:hover {
+    background-color: white;
+    color: black;
+}

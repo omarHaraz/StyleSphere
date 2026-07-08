@@ -1,9 +1,11 @@
-package com.StyleSphere.backend.controller;
+package com.StyleSphere.backend.dto;
 
 public class LoginRequest
 {
     private String email;
     private String password;
+
+    public LoginRequest() {}
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

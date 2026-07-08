@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.controller;
+package com.StyleSphere.backend.dto;
 
 public class JwtAuthenticationResponse
 {
