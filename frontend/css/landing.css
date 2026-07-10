@@ -48,6 +48,37 @@ nav ul li a:hover {
     color: #ccc;
 }
 
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: 0.3s ease;
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
 /* Icons (Search, User, Cart) */
 .nav-icons {
     color: white;
@@ -94,4 +125,64 @@ nav ul li a:hover {
 .shop-now-btn:hover {
     background-color: white;
     color: black;
+}
+
+@media (max-width: 768px) {
+    header {
+        top: 12px;
+        padding: 16px 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .menu-toggle {
+        display: flex;
+        order: 3;
+    }
+
+    .logo {
+        font-size: 24px;
+    }
+
+    .site-nav {
+        display: none;
+        width: 100%;
+        order: 4;
+    }
+
+    .site-nav.open {
+        display: block;
+    }
+
+    nav ul {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px 12px;
+        padding: 12px 0 4px;
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 10px;
+        padding: 14px 16px;
+    }
+
+    nav ul li a {
+        font-size: 12px;
+    }
+
+    .nav-icons {
+        width: auto;
+        margin-left: auto;
+        font-size: 24px;
+        gap: 12px;
+    }
+
+    .hero-section {
+        height: 100svh;
+        padding: 160px 20px 40px;
+    }
+
+    .shop-now-btn {
+        font-size: 20px;
+        padding: 18px 32px;
+    }
 }

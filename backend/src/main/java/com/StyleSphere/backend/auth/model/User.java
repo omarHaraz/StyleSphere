@@ -3,6 +3,7 @@ package com.StyleSphere.backend.auth.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,7 +25,12 @@ public class User {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles;
+    @CollectionTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
 
 
     public User() {

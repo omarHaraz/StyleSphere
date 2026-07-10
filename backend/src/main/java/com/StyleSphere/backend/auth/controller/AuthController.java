@@ -1,6 +1,7 @@
 package com.StyleSphere.backend.auth.controller;
 
 import com.StyleSphere.backend.auth.dto.*;
+import com.StyleSphere.backend.auth.model.User;
 import com.StyleSphere.backend.auth.repository.UserRepository;
 import com.StyleSphere.backend.auth.security.JwtTokenProvider;
 import com.StyleSphere.backend.auth.service.EmailService;
@@ -53,8 +54,13 @@ public class AuthController {
                 )
         );
 
-        String jwt = tokenProvider.generateToken(authentication.getName());
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow();
 
+        String jwt = tokenProvider.generateToken(
+                user.getEmail(),
+                user.getRoles()
+        );
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
@@ -128,7 +134,9 @@ public class AuthController {
                     new SignupRequest(
                             signup.getName(),
                             signup.getEmail(),
-                            signup.getPassword() // already hashed
+                            signup.getPassword()
+
+                            // already hashed
                     )
             );
 
@@ -139,7 +147,13 @@ public class AuthController {
 
             otpService.deletePendingSignup(signup.getEmail());
 
-            String jwt = tokenProvider.generateToken(signup.getEmail());
+            User user = userRepository.findByEmail(signup.getEmail())
+                    .orElseThrow();
+
+            String jwt = tokenProvider.generateToken(
+                    user.getEmail(),
+                    user.getRoles()
+            );
 
             return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
 

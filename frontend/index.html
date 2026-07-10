@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STYLESPHERE</title>
     <link rel="stylesheet" href="css/landing.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -10,10 +11,15 @@
 
 <header>
     <a href="index.html" class="logo">StyleSphere</a>
-    <nav>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <nav class="site-nav">
         <ul>
             <li><a href="index.html">HOME</a></li>
-            <li><a href="store.html">SHOP ALL</a></li> 
+            <li><a href="store.html">SHOP ALL</a></li>
             <li><a href="#">COLLECTIONS</a></li>
             <li><a href="#">CONTACT US</a></li>
             <li><a href="#">ABOUT US</a></li>
@@ -23,12 +29,12 @@
 
     <div class="nav-icons">
         <i class="ph ph-magnifying-glass"></i>
-
         <i class="ph ph-user"></i>
-
         <i class="ph ph-tote"></i>
     </div>
 </header>
+
+<script src="js/mobileMenu.js"></script>
 
 <!-- Hero Image Area -->
 <section class="hero-section">

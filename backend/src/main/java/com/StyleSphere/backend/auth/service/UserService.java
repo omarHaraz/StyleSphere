@@ -21,7 +21,8 @@ public class UserService {
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); // Already hashed
+        user.setPassword(request.getPassword());
+        user.getRoles().add("ROLE_CUSTOMER");
 
         return userRepository.save(user);
     }
