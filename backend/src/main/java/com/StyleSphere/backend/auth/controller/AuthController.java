@@ -1,19 +1,18 @@
 package com.StyleSphere.backend.auth.controller;
 
-import com.StyleSphere.backend.auth.dto.JwtAuthenticationResponse;
-import com.StyleSphere.backend.auth.dto.LoginRequest;
-import com.StyleSphere.backend.auth.dto.OtpRequest;
-import com.StyleSphere.backend.auth.dto.OtpVerificationRequest;
+import com.StyleSphere.backend.auth.dto.*;
 import com.StyleSphere.backend.auth.repository.UserRepository;
 import com.StyleSphere.backend.auth.security.JwtTokenProvider;
 import com.StyleSphere.backend.auth.service.EmailService;
 import com.StyleSphere.backend.auth.service.OtpService;
+import com.StyleSphere.backend.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -21,10 +20,13 @@ import java.security.SecureRandom;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
-public class AuthController
-{
+public class AuthController {
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private OtpService otpService;
@@ -38,13 +40,15 @@ public class AuthController
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(), // Use email here
+                        loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
@@ -54,40 +58,97 @@ public class AuthController
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
-
     @PostMapping("/request-otp")
-    public ResponseEntity<?> requestOtp(@RequestBody OtpRequest request) {
+    public ResponseEntity<?> requestOtp(@RequestBody SignupRequest request) {
+
         if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("An account with this email already exists.");
         }
 
         try {
-            String code = String.format("%06d", new SecureRandom().nextInt(1000000));
-            otpService.saveOtp(request.getEmail(), code);
-            emailService.sendHtmlEmail(request.getEmail(), "Your StyleSphere Verification Code", code);
-            return ResponseEntity.ok("Verification code sent to your email.");
+
+            String code = String.format("%06d",
+                    new SecureRandom().nextInt(1_000_000));
+
+            // Store the hashed password in Redis
+            PendingSignup signup = new PendingSignup(
+                    request.getName(),
+                    request.getEmail(),
+                    passwordEncoder.encode(request.getPassword()),
+                    code
+            );
+
+            otpService.savePendingSignup(signup);
+
+            emailService.sendHtmlEmail(
+                    request.getEmail(),
+                    "Your StyleSphere Verification Code",
+                    code
+            );
+
+            return ResponseEntity.ok("Verification code sent.");
+
         } catch (Exception e) {
+
+            e.printStackTrace();
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to send email: " + e.getMessage());
         }
     }
 
-
-
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verifyOtp(@RequestBody OtpVerificationRequest request) {
-        String storedCode = otpService.getOtp(request.getEmail());
+    public ResponseEntity<?> verifyOtp(
+            @RequestBody OtpVerificationRequest request) {
 
-        if (storedCode != null && storedCode.equals(request.getCode())) {
-            otpService.deleteOtp(request.getEmail());
-            String jwt = tokenProvider.generateToken(request.getEmail());
+        try {
+
+            PendingSignup signup = otpService.getPendingSignup(request.getEmail());
+
+            if (signup == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("OTP expired.");
+            }
+
+            if (!signup.getOtp().equals(request.getCode())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Invalid OTP.");
+            }
+
+            if (userRepository.existsByEmail(signup.getEmail())) {
+
+                otpService.deletePendingSignup(signup.getEmail());
+
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("An account with this email already exists.");
+            }
+
+            userService.createUser(
+                    new SignupRequest(
+                            signup.getName(),
+                            signup.getEmail(),
+                            signup.getPassword() // already hashed
+                    )
+            );
+
+            emailService.sendWelcomeEmail(
+                    signup.getEmail(),
+                    signup.getName()
+            );
+
+            otpService.deletePendingSignup(signup.getEmail());
+
+            String jwt = tokenProvider.generateToken(signup.getEmail());
+
             return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Verification failed: " + e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Invalid or expired code.");
     }
-
-
 }

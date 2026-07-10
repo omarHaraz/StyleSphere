@@ -62,6 +62,8 @@ function renderProducts(products) {
 
         grid.appendChild(card);
     });
+
+    initializeCarousels()
 }
 
 

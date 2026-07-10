@@ -1,44 +1,65 @@
 package com.StyleSphere.backend.auth.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+
+
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
-public class EmailService
-{
+public class EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
+    private Resend resend;
 
     @Autowired
-    private TemplateEngine templateEngine; // Injected Thymeleaf engine
+    private TemplateEngine templateEngine;
 
-    public void sendHtmlEmail(String to, String subject, String otpCode) throws MessagingException {
-        // 1. Prepare data for the template
+    public void sendHtmlEmail(String to, String subject, String otpCode) throws ResendException {
+
+        // Prepare Thymeleaf variables
         Context context = new Context();
         context.setVariable("otpCode", otpCode);
 
-        // 2. Process the HTML template
+        // Generate HTML from template
         String htmlContent = templateEngine.process("otp-email", context);
 
-        // 3. Send as MimeMessage (HTML)
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        // Create the email request
+        CreateEmailOptions request = CreateEmailOptions.builder()
+                .from("StyleSphere <onboarding@resend.dev>")
+                .to(to)
+                .subject(subject)
+                .html(htmlContent)
+                .build();
 
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlContent, true); // True tells it this is HTML
-        helper.setFrom("your-email@gmail.com");
+        // Send email
+        CreateEmailResponse data = resend.emails().send(request);
+    }
 
-        mailSender.send(message);
+
+    public void sendWelcomeEmail(String to, String name) throws ResendException {
+
+        Context context = new Context();
+        context.setVariable("name", name);
+
+        String html = templateEngine.process("welcome-email", context);
+
+        CreateEmailOptions request = CreateEmailOptions.builder()
+                .from("StyleSphere <onboarding@resend.dev>")
+                .to(to)
+                .subject("Welcome to StyleSphere 🎉")
+                .html(html)
+                .build();
+
+        resend.emails().send(request);
     }
 
 
 }
+
+

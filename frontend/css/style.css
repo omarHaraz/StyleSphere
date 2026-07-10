@@ -190,3 +190,33 @@ body{
 .signup-text a:hover{
     text-decoration:underline;
 }
+
+
+/* Wide OTP Container */
+.otp-container {
+    display: flex;
+    justify-content: space-between; /* Pushes inputs to edges */
+    gap: 8px; /* Adds small space between them */
+    margin: 24px 0;
+    width: 100%;
+}
+
+/* Wide OTP Inputs */
+.otp-input {
+    flex: 1; /* Makes each input grow to fill equal width */
+    height: 55px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.2s;
+    /* Ensuring they don't get too small on mobile */
+    min-width: 40px; 
+}
+
+/* Matching your focus state */
+.otp-input:focus {
+    border-color: #5a32fa;
+}

@@ -1,6 +1,10 @@
 package com.StyleSphere.backend.auth.service;
 
-import org.springframework.beans.factory.annotation.Autowired;import org.springframework.data.redis.core.RedisTemplate;
+import com.StyleSphere.backend.auth.dto.PendingSignup;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -9,19 +13,33 @@ import java.time.Duration;
 public class OtpService {
 
     @Autowired
-    private RedisTemplate<String , String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
-    public void saveOtp(String email ,String otp)
-    {
-        redisTemplate.opsForValue().set("otp:" + email,otp, Duration.ofMinutes(5));
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public void savePendingSignup(PendingSignup signup) throws JsonProcessingException {
+
+        String json = objectMapper.writeValueAsString(signup);
+
+        redisTemplate.opsForValue().set(
+                "signup:" + signup.getEmail(),
+                json,
+                Duration.ofMinutes(5)
+        );
     }
 
-    public String getOtp(String email) {
-        return redisTemplate.opsForValue().get("otp:" + email);
+    public PendingSignup getPendingSignup(String email) throws JsonProcessingException {
+
+        String json = redisTemplate.opsForValue().get("signup:" + email);
+
+        if (json == null) {
+            return null;
+        }
+
+        return objectMapper.readValue(json, PendingSignup.class);
     }
 
-    public void deleteOtp(String email) {
-        redisTemplate.delete("otp:" + email);
+    public void deletePendingSignup(String email) {
+        redisTemplate.delete("signup:" + email);
     }
-
 }
