@@ -1,7 +1,7 @@
-package com.StyleSphere.backend.security;
+package com.StyleSphere.backend.auth.security;
 
-import com.StyleSphere.backend.model.User;
-import com.StyleSphere.backend.repository.UserRepository;
+import com.StyleSphere.backend.auth.model.User;
+import com.StyleSphere.backend.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

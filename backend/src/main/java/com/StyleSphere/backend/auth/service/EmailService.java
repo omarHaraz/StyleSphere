@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.service;
+package com.StyleSphere.backend.auth.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

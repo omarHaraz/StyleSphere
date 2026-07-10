@@ -1,8 +1,8 @@
 package com.StyleSphere.backend.config;
 
 
-import com.StyleSphere.backend.security.CustomUserDetailsService;
-import com.StyleSphere.backend.security.JwtAuthenticationFilter;
+import com.StyleSphere.backend.auth.security.CustomUserDetailsService;
+import com.StyleSphere.backend.auth.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

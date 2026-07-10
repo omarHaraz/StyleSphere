@@ -1,7 +1,7 @@
-package com.StyleSphere.backend.service;
+package com.StyleSphere.backend.product.service;
 
-import com.StyleSphere.backend.model.Product;
-import com.StyleSphere.backend.repository.ProductRepository;
+import com.StyleSphere.backend.product.model.Product;
+import com.StyleSphere.backend.product.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

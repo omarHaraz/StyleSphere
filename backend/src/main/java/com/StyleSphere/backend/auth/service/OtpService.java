@@ -1,8 +1,6 @@
-package com.StyleSphere.backend.service;
+package com.StyleSphere.backend.auth.service;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.beans.factory.annotation.Autowired;import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

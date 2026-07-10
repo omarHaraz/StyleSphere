@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.dto;
+package com.StyleSphere.backend.auth.dto;
 
 public  class OtpVerificationRequest {
     private String email;

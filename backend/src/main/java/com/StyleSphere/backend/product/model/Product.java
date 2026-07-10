@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.model;
+package com.StyleSphere.backend.product.model;
 
 import jakarta.persistence.*;
 

@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.security;
+package com.StyleSphere.backend.auth.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,6 +19,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        // This tells Spring to completely bypass this filter for auth endpoints
+        return path.startsWith("/api/auth/");
+    }
 
 
     @Override

@@ -1,6 +1,6 @@
-package com.StyleSphere.backend.service;
+package com.StyleSphere.backend.product.service;
 
-import com.StyleSphere.backend.model.Product;
+import com.StyleSphere.backend.product.model.Product;
 
 import java.util.List;
 
