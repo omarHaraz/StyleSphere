@@ -1,7 +1,7 @@
-package com.StyleSphere.backend.controller;
+package com.StyleSphere.backend.product.controller;
 
-import com.StyleSphere.backend.model.Product;
-import com.StyleSphere.backend.service.ProductService;
+import com.StyleSphere.backend.product.model.Product;
+import com.StyleSphere.backend.product.service.ProductService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +22,6 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return productService.getAllProducts(); // Automatically turns into JSON
+        return productService.getAllProducts();
     }
 }

@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.security;
+package com.StyleSphere.backend.auth.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

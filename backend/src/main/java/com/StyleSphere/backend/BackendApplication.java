@@ -1,10 +1,7 @@
 package com.StyleSphere.backend;
 
-import com.StyleSphere.backend.model.Product;
-import com.StyleSphere.backend.model.User;
-import com.StyleSphere.backend.repository.ProductRepository;
-import com.StyleSphere.backend.repository.UserRepository;
-import com.StyleSphere.backend.service.EmailService;
+import com.StyleSphere.backend.auth.repository.UserRepository;
+import com.StyleSphere.backend.auth.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.model;
+package com.StyleSphere.backend.auth.model;
 
 
 import jakarta.persistence.*;
