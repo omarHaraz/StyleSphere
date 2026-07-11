@@ -1,12 +1,12 @@
 package com.StyleSphere.backend.auth.controller;
 
 import com.StyleSphere.backend.auth.dto.*;
-import com.StyleSphere.backend.auth.model.User;
-import com.StyleSphere.backend.auth.repository.UserRepository;
+import com.StyleSphere.backend.user.model.User;
+import com.StyleSphere.backend.user.repository.UserRepository;
 import com.StyleSphere.backend.auth.security.JwtTokenProvider;
-import com.StyleSphere.backend.auth.service.EmailService;
-import com.StyleSphere.backend.auth.service.OtpService;
-import com.StyleSphere.backend.auth.service.UserService;
+import com.StyleSphere.backend.user.service.EmailService;
+import com.StyleSphere.backend.user.service.OtpService;
+import com.StyleSphere.backend.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

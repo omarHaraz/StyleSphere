@@ -1,7 +1,7 @@
 package com.StyleSphere.backend.auth.security;
 
-import com.StyleSphere.backend.auth.model.User;
-import com.StyleSphere.backend.auth.repository.UserRepository;
+import com.StyleSphere.backend.user.model.User;
+import com.StyleSphere.backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +33,7 @@ public class CustomUserDetailsService  implements UserDetailsService {
                         .collect(Collectors.toSet());
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), // Spring Security will treat the email as the "username"
+                user.getEmail(),
                 user.getPassword(),
                 authorities
         );

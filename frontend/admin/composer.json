@@ -1,0 +1,8 @@
+{
+    "name": "clothify-admin",
+    "description": "Clothify Admin Dashboard - Clothing store admin template",
+    "type": "project",
+    "license": "MIT",
+    "authors": [],
+    "require": {}
+}
