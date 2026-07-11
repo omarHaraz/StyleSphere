@@ -24,6 +24,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean enabled = true;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "user_roles",
@@ -36,13 +39,6 @@ public class User {
     public User() {
     }
 
-    public User(int id, String name, String email, String password, Set<String> roles) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
 
     public int getId() {
         return id;
@@ -79,4 +75,7 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }
