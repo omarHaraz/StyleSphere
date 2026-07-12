@@ -1,35 +1,35 @@
-package com.StyleSphere.backend.product.model;
-
-import jakarta.persistence.*;
+package com.StyleSphere.backend.product.dto;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "products")
-public class Product
-{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductResponse {
+
     private Long id;
-
-    @Column(nullable = false, unique = true)
     private String name;
-
-    @Column(length = 3000)
     private String description;
-
-    @Column(nullable = false)
     private BigDecimal price;
-
-    @Column(nullable = false)
     private Integer stockQuantity;
+    private String category;
+    private boolean enabled;
 
-    @Column(nullable = false)
-    private boolean enabled = true;
+    public ProductResponse() {
+    }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    public ProductResponse(Long id,
+                           String name,
+                           String description,
+                           BigDecimal price,
+                           Integer stockQuantity,
+                           String category,
+                           boolean enabled) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.category = category;
+        this.enabled = enabled;
+    }
 
     public Long getId() {
         return id;
@@ -71,11 +71,11 @@ public class Product
         this.stockQuantity = stockQuantity;
     }
 
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 

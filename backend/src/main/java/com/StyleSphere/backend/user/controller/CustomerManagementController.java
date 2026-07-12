@@ -1,6 +1,8 @@
 package com.StyleSphere.backend.user.controller;
 
 
+import com.StyleSphere.backend.user.dto.CustomerResponse;
+import com.StyleSphere.backend.user.dto.CustomerUpdateRequest;
 import com.StyleSphere.backend.user.model.User;
 import com.StyleSphere.backend.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +22,16 @@ public class CustomerManagementController
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllCustomers() {
+    public ResponseEntity<List<CustomerResponse>> getCustomers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateCustomer(
+    public ResponseEntity<CustomerResponse> updateCustomer(
             @PathVariable Long id,
-            @RequestBody User user) {
+            @RequestBody CustomerUpdateRequest request) {
 
-        return ResponseEntity.ok(userService.updateUser(id, user));
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/{id}")

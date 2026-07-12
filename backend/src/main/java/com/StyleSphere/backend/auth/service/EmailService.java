@@ -1,4 +1,4 @@
-package com.StyleSphere.backend.user.service;
+package com.StyleSphere.backend.auth.service;
 
 
 

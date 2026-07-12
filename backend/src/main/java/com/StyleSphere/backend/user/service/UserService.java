@@ -4,6 +4,8 @@ package com.StyleSphere.backend.user.service;
 import com.StyleSphere.backend.user.dto.AdminCreateRequest;
 import com.StyleSphere.backend.user.dto.AdminResponse;
 import com.StyleSphere.backend.auth.dto.SignupRequest;
+import com.StyleSphere.backend.user.dto.CustomerResponse;
+import com.StyleSphere.backend.user.dto.CustomerUpdateRequest;
 import com.StyleSphere.backend.user.model.User;
 import com.StyleSphere.backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,26 +89,39 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers()
-    {
+    public List<CustomerResponse> getAllUsers() {
+
         return userRepository.findAll()
-                .stream().filter(user -> user.getRoles().contains("ROLE_CUSTOMER"))
+                .stream()
+                .filter(user -> user.getRoles().contains("ROLE_CUSTOMER"))
+                .map(user -> new CustomerResponse(
+                         user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.isEnabled()))
                 .toList();
     }
 
-    public User updateUser(Long id, User updatedUser) {
+    public CustomerResponse updateUser(Long id, CustomerUpdateRequest request) {
 
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setName(updatedUser.getName());
-        existingUser.setRoles(existingUser.getRoles());
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setName(request.getName());
+        existingUser.setEmail(request.getEmail());
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        return userRepository.save(existingUser);
+        User savedUser = userRepository.save(existingUser);
+
+        return new CustomerResponse(
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail(),
+                savedUser.isEnabled()
+        );
     }
 
     public void deactivateUser(Long id) {
