@@ -1,12 +1,14 @@
 package com.StyleSphere.backend;
 
-import com.StyleSphere.backend.auth.repository.UserRepository;
 import com.StyleSphere.backend.auth.service.EmailService;
+import com.StyleSphere.backend.user.model.User;
+import com.StyleSphere.backend.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;

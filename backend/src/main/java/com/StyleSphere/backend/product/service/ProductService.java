@@ -1,5 +1,7 @@
 package com.StyleSphere.backend.product.service;
 
+import com.StyleSphere.backend.exception.DuplicateResourceException;
+import com.StyleSphere.backend.exception.ResourceNotFoundException;
 import com.StyleSphere.backend.product.dto.ProductCreateRequest;
 import com.StyleSphere.backend.product.dto.ProductResponse;
 import com.StyleSphere.backend.product.dto.ProductUpdateRequest;
@@ -10,6 +12,7 @@ import com.StyleSphere.backend.product.model.ProductImage;
 import com.StyleSphere.backend.product.repository.CategoryRepository;
 import com.StyleSphere.backend.product.repository.ProductImageRepository;
 import com.StyleSphere.backend.product.repository.ProductRepository;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,7 +75,7 @@ public class ProductService {
                                          List<MultipartFile> images) throws IOException {
 
         if (productRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Product name already exists.");
+            throw new DuplicateResourceException("Product name already exists.");
         }
 
         Category category = categoryRepository
@@ -97,7 +100,7 @@ public class ProductService {
         if (images != null && !images.isEmpty()) {
 
             if (images.size() > 10) {
-                throw new RuntimeException("Maximum 10 images are allowed.");
+                throw new BadRequestException("Maximum 10 images are allowed.");
             }
 
             List<UploadResponse> uploadedImages =
@@ -189,13 +192,16 @@ public class ProductService {
                             updatedProduct.getName()
                     );
 
-            // Save image records
+            int order = 1; // 1. You initialize the counter here
+
             for (UploadResponse upload : uploadedImages) {
 
                 ProductImage productImage = new ProductImage();
-
                 productImage.setImageUrl(upload.getImageUrl());
                 productImage.setPublicId(upload.getPublicId());
+
+                productImage.setDisplayOrder(order++);
+
                 productImage.setProduct(updatedProduct);
 
                 productImageRepository.save(productImage);
@@ -216,7 +222,8 @@ public class ProductService {
     public void deleteProduct(Long id) throws IOException {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found."));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Product not found."));
 
         List<ProductImage> images =
                 productImageRepository.findByProduct(product);
@@ -230,9 +237,8 @@ public class ProductService {
         productImageRepository.deleteAll(images);
 
         // Soft delete product
-        product.setEnabled(false);
+        productRepository.delete(product);
 
-        productRepository.save(product);
     }
 
 

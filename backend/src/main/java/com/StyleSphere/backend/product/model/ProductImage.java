@@ -16,8 +16,8 @@ public class ProductImage {
     @Column(nullable = false)
     private String publicId;
 
-    @Column(nullable = false)
-    private Integer displayOrder;
+    @Column(name = "display_order", nullable = false)
+    private Integer displayOrder = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
