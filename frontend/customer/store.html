@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StyleSphere | Shop All</title>
+    <!-- Added target ID for dynamic tab title -->
+    <title id="pageTitle">StyleSphere | Shop All</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/shop.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -11,7 +12,8 @@
 <body>
 
 <header>
-    <a href="index.html" class="logo">StyleSphere</a>
+    <!-- Added target ID for dynamic logo branding -->
+    <a href="index.html" class="logo" id="siteLogo">StyleSphere</a>
     <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
         <span></span>
         <span></span>
@@ -47,12 +49,12 @@
     </div>
     <br>
     
-
-    <div id="product-grid" class="product-grid">
- </div>
+    <div id="product-grid" class="product-grid"></div>
 </div>
 
 <script src="js/productService.js"></script>
 <script src="js/carousel.js"></script>
+<!-- Fetch and apply custom store configuration values -->
+<script src="js/publicSettings.js"></script>
 </body>
 </html>

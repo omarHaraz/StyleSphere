@@ -3,6 +3,8 @@ package com.StyleSphere.backend.product.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -30,6 +32,14 @@ public class Product
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+
+    // 2. Map the bidirectional relationship to ProductImage
+    // cascade = CascadeType.ALL ensures image life cycle states follow the product
+    // orphanRemoval = true cleans up DB records automatically if deleted from this list
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC") // Keeps your carousel images in the correct display order!
+    private List<ProductImage> images = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -85,5 +95,13 @@ public class Product
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public List<ProductImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ProductImage> images) {
+        this.images = images;
     }
 }

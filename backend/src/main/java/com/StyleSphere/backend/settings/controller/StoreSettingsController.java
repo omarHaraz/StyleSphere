@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/settings")
-@PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_SUPER_ADMIN')")
 public class StoreSettingsController {
 
     @Autowired
@@ -22,6 +21,7 @@ public class StoreSettingsController {
         return ResponseEntity.ok(settingsService.getStoreSettings());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_SUPER_ADMIN')")
     @PutMapping
     public ResponseEntity<StoreSettingsResponse> updateSettings(
             @Valid @RequestBody StoreSettingsRequest request) {

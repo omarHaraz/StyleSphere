@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STYLESPHERE</title>
+    <!-- Wrap title so it updates in the browser tab -->
+    <title id="pageTitle">STYLESPHERE</title>
     <link rel="stylesheet" href="css/landing.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
 <header>
-    <a href="index.html" class="logo">StyleSphere</a>
+    <!-- Added id="siteLogo" to dynamically change the brand name -->
+    <a href="index.html" class="logo" id="siteLogo">StyleSphere</a>
     <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
         <span></span>
         <span></span>
@@ -41,6 +43,9 @@
     <div class="hero-overlay"></div>
     <a href="store.html" class="shop-now-btn">SHOP NOW</a>
 </section>
+
+<!-- Script to dynamically load public store branding configurations -->
+<script src="js/publicSettings.js"></script>
 
 </body>
 </html>

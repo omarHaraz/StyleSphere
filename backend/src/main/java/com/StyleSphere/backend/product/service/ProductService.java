@@ -14,20 +14,21 @@ import com.StyleSphere.backend.product.repository.ProductImageRepository;
 import com.StyleSphere.backend.product.repository.ProductRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProductService {
 
-
-
     @Autowired
     private ProductRepository productRepository;
-
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -38,9 +39,24 @@ public class ProductService {
     @Autowired
     private ProductImageRepository productImageRepository;
 
+    /**
+     * EXTRACTS images from the already-loaded Entity collection.
+     * ZERO extra database queries are fired here.
+     */
+    private List<String> extractPreloadedImageUrls(Product product) {
+        if (product.getImages() == null) {
+            return List.of();
+        }
+        return product.getImages()
+                .stream()
+                .map(ProductImage::getImageUrl)
+                .toList();
+    }
 
+    @Cacheable(value = "products")
     public List<ProductResponse> getAllProducts() {
-
+        System.out.println("=== Cache Miss! Fetching ALL products from Database ===");
+        // Automatically leverages your EntityGraph optimized JOIN FETCH
         return productRepository.findAll()
                 .stream()
                 .map(product -> new ProductResponse(
@@ -50,13 +66,15 @@ public class ProductService {
                         product.getPrice(),
                         product.getStockQuantity(),
                         product.getCategory().getName(),
-                        product.isEnabled()
+                        product.isEnabled(),
+                        extractPreloadedImageUrls(product) // Pure Java collection mapping, NO extra queries!
                 ))
                 .toList();
     }
 
+    @Cacheable(value = "product", key = "#id")
     public ProductResponse getProduct(Long id) {
-
+        System.out.println("=== Cache Miss! Fetching single product ID: " + id + " from Database ===");
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found."));
 
@@ -67,10 +85,12 @@ public class ProductService {
                 product.getPrice(),
                 product.getStockQuantity(),
                 product.getCategory().getName(),
-                product.isEnabled()
+                product.isEnabled(),
+                extractPreloadedImageUrls(product)
         );
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponse createProduct(ProductCreateRequest request,
                                          List<MultipartFile> images) throws IOException {
 
@@ -87,7 +107,6 @@ public class ProductService {
                 });
 
         Product product = new Product();
-
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
@@ -96,9 +115,9 @@ public class ProductService {
         product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
+        List<String> savedImageUrls = new ArrayList<>();
 
         if (images != null && !images.isEmpty()) {
-
             if (images.size() > 10) {
                 throw new BadRequestException("Maximum 10 images are allowed.");
             }
@@ -111,17 +130,15 @@ public class ProductService {
                     );
 
             int order = 1;
-
             for (UploadResponse upload : uploadedImages) {
-
                 ProductImage productImage = new ProductImage();
-
                 productImage.setImageUrl(upload.getImageUrl());
                 productImage.setPublicId(upload.getPublicId());
                 productImage.setDisplayOrder(order++);
                 productImage.setProduct(savedProduct);
 
                 productImageRepository.save(productImage);
+                savedImageUrls.add(upload.getImageUrl());
             }
         }
 
@@ -132,10 +149,15 @@ public class ProductService {
                 savedProduct.getPrice(),
                 savedProduct.getStockQuantity(),
                 savedProduct.getCategory().getName(),
-                savedProduct.isEnabled()
+                savedProduct.isEnabled(),
+                savedImageUrls
         );
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "product", key = "#id")
+    })
     public ProductResponse updateProduct(Long id,
                                          ProductUpdateRequest request,
                                          List<MultipartFile> images) throws IOException {
@@ -145,17 +167,14 @@ public class ProductService {
 
         if (!product.getName().equals(request.getName())
                 && productRepository.existsByName(request.getName())) {
-
             throw new RuntimeException("Product name already exists.");
         }
 
         Category category = categoryRepository
                 .findByName(request.getCategoryName())
                 .orElseGet(() -> {
-
                     Category newCategory = new Category();
                     newCategory.setName(request.getCategoryName());
-
                     return categoryRepository.save(newCategory);
                 });
 
@@ -166,14 +185,13 @@ public class ProductService {
         product.setCategory(category);
 
         Product updatedProduct = productRepository.save(product);
+        List<String> finalImageUrls = new ArrayList<>();
 
         if (images != null && !images.isEmpty()) {
-
             if (images.size() > 10) {
                 throw new RuntimeException("Maximum 10 images are allowed.");
             }
 
-            // Delete old Cloudinary images
             List<ProductImage> existingImages =
                     productImageRepository.findByProduct(product);
 
@@ -181,10 +199,8 @@ public class ProductService {
                 cloudinaryService.deleteImage(image.getPublicId());
             }
 
-            // Delete image records
             productImageRepository.deleteAll(existingImages);
 
-            // Upload new images
             List<UploadResponse> uploadedImages =
                     cloudinaryService.uploadImages(
                             images,
@@ -192,20 +208,19 @@ public class ProductService {
                             updatedProduct.getName()
                     );
 
-            int order = 1; // 1. You initialize the counter here
-
+            int order = 1;
             for (UploadResponse upload : uploadedImages) {
-
                 ProductImage productImage = new ProductImage();
                 productImage.setImageUrl(upload.getImageUrl());
                 productImage.setPublicId(upload.getPublicId());
-
                 productImage.setDisplayOrder(order++);
-
                 productImage.setProduct(updatedProduct);
 
                 productImageRepository.save(productImage);
+                finalImageUrls.add(upload.getImageUrl());
             }
+        } else {
+            finalImageUrls = extractPreloadedImageUrls(updatedProduct);
         }
 
         return new ProductResponse(
@@ -215,32 +230,26 @@ public class ProductService {
                 updatedProduct.getPrice(),
                 updatedProduct.getStockQuantity(),
                 updatedProduct.getCategory().getName(),
-                updatedProduct.isEnabled()
+                updatedProduct.isEnabled(),
+                finalImageUrls
         );
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "products", allEntries = true),
+            @CacheEvict(value = "product", key = "#id")
+    })
     public void deleteProduct(Long id) throws IOException {
-
         Product product = productRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Product not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
 
-        List<ProductImage> images =
-                productImageRepository.findByProduct(product);
+        List<ProductImage> images = productImageRepository.findByProduct(product);
 
-        // Delete from Cloudinary
         for (ProductImage image : images) {
             cloudinaryService.deleteImage(image.getPublicId());
         }
 
-        // Delete image records
         productImageRepository.deleteAll(images);
-
-        // Soft delete product
         productRepository.delete(product);
-
     }
-
-
-
 }
